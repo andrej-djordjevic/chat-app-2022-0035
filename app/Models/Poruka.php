@@ -17,6 +17,7 @@ class Poruka extends Model
     protected $fillable = [
         'tekst',
         'idChat',
+        'idKorisnik',
     ];
 
     /**
@@ -25,6 +26,14 @@ class Poruka extends Model
     public function chat(): BelongsTo
     {
         return $this->belongsTo(Chat::class, 'idChat', 'idChat');
+    }
+
+    /**
+     * Get the user who sent this message.
+     */
+    public function korisnik(): BelongsTo
+    {
+        return $this->belongsTo(Korisnik::class, 'idKorisnik', 'idKorisnik');
     }
 
     /**

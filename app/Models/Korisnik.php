@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Korisnik extends Model
 {
@@ -45,6 +46,14 @@ class Korisnik extends Model
         return $this->belongsToMany(Chat::class, 'pripada', 'idKorisnik', 'idChat')
                     ->withPivot('datumKreiranja')
                     ->withTimestamps();
+    }
+
+    /**
+     * Get the messages sent by this user.
+     */
+    public function poruke(): HasMany
+    {
+        return $this->hasMany(Poruka::class, 'idKorisnik', 'idKorisnik');
     }
 }
 
