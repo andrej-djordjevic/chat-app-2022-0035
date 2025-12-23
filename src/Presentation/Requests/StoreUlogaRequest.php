@@ -2,15 +2,8 @@
 
 namespace App\Presentation\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class StoreUlogaRequest extends FormRequest
+class StoreUlogaRequest extends BaseFormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     public function rules(): array
     {
         return [

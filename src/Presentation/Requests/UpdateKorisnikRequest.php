@@ -2,15 +2,8 @@
 
 namespace App\Presentation\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class UpdateKorisnikRequest extends FormRequest
+class UpdateKorisnikRequest extends BaseFormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     public function rules(): array
     {
         $id = $this->route('korisnik');
