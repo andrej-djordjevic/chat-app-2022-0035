@@ -14,7 +14,7 @@ use App\Presentation\Controllers\AuthController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Protected routes
+// Protected routes - zahtevaju autentifikaciju
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return response()->json([
@@ -23,39 +23,85 @@ Route::middleware('auth:sanctum')->group(function () {
         ], 200);
     });
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // CREATE, UPDATE, DELETE rute - zaštićene
+    Route::post('uloga', [UlogaController::class, 'store']);
+    Route::put('uloga/{uloga}', [UlogaController::class, 'update']);
+    Route::patch('uloga/{uloga}', [UlogaController::class, 'update']);
+    Route::delete('uloga/{uloga}', [UlogaController::class, 'destroy']);
+
+    Route::post('korisnik', [KorisnikController::class, 'store']);
+    Route::put('korisnik/{korisnik}', [KorisnikController::class, 'update']);
+    Route::patch('korisnik/{korisnik}', [KorisnikController::class, 'update']);
+    Route::delete('korisnik/{korisnik}', [KorisnikController::class, 'destroy']);
+
+    Route::post('chat', [ChatController::class, 'store']);
+    Route::put('chat/{chat}', [ChatController::class, 'update']);
+    Route::patch('chat/{chat}', [ChatController::class, 'update']);
+    Route::delete('chat/{chat}', [ChatController::class, 'destroy']);
+
+    Route::post('poruka', [PorukaController::class, 'store']);
+    Route::put('poruka/{poruka}', [PorukaController::class, 'update']);
+    Route::patch('poruka/{poruka}', [PorukaController::class, 'update']);
+    Route::delete('poruka/{poruka}', [PorukaController::class, 'destroy']);
+
+    Route::post('datoteka', [DatotekaController::class, 'store']);
+    Route::put('datoteka/{datoteka}', [DatotekaController::class, 'update']);
+    Route::patch('datoteka/{datoteka}', [DatotekaController::class, 'update']);
+    Route::delete('datoteka/{datoteka}', [DatotekaController::class, 'destroy']);
+
+    // Nested CREATE, UPDATE, DELETE
+    Route::prefix('chat/{chat}')->group(function () {
+        Route::post('poruka', [PorukaController::class, 'store']);
+        Route::put('poruka/{poruka}', [PorukaController::class, 'update']);
+        Route::patch('poruka/{poruka}', [PorukaController::class, 'update']);
+        Route::delete('poruka/{poruka}', [PorukaController::class, 'destroy']);
+    });
+
+    Route::prefix('poruka/{poruka}')->group(function () {
+        Route::post('datoteka', [DatotekaController::class, 'store']);
+        Route::put('datoteka/{datoteka}', [DatotekaController::class, 'update']);
+        Route::patch('datoteka/{datoteka}', [DatotekaController::class, 'update']);
+        Route::delete('datoteka/{datoteka}', [DatotekaController::class, 'destroy']);
+    });
+
+    // Pripada routes - CREATE, DELETE zaštićene
+    Route::prefix('chat/{chat}')->group(function () {
+        Route::post('korisnici', [PripadaController::class, 'store']);
+        Route::delete('korisnici/{korisnik}', [PripadaController::class, 'destroy']);
+    });
 });
 
-// Uloga routes
-Route::apiResource('uloga', UlogaController::class);
+// Public routes - GET (index, show) - ne zahtevaju autentifikaciju
+Route::get('uloga', [UlogaController::class, 'index']);
+Route::get('uloga/{uloga}', [UlogaController::class, 'show']);
 
-// Korisnik routes
-Route::apiResource('korisnik', KorisnikController::class);
+Route::get('korisnik', [KorisnikController::class, 'index']);
+Route::get('korisnik/{korisnik}', [KorisnikController::class, 'show']);
 
-// Chat routes
-Route::apiResource('chat', ChatController::class);
+Route::get('chat', [ChatController::class, 'index']);
+Route::get('chat/{chat}', [ChatController::class, 'show']);
 
-// Nested routes: Poruke u chatu
+Route::get('poruka', [PorukaController::class, 'index']);
+Route::get('poruka/{poruka}', [PorukaController::class, 'show']);
+
+Route::get('datoteka', [DatotekaController::class, 'index']);
+Route::get('datoteka/{datoteka}', [DatotekaController::class, 'show']);
+
+// Nested GET routes
 Route::prefix('chat/{chat}')->group(function () {
-    Route::apiResource('poruka', PorukaController::class);
+    Route::get('poruka', [PorukaController::class, 'index']);
+    Route::get('poruka/{poruka}', [PorukaController::class, 'show']);
 });
 
-// Standalone Poruka routes
-Route::apiResource('poruka', PorukaController::class);
-
-// Nested routes: Datoteke u poruci
 Route::prefix('poruka/{poruka}')->group(function () {
-    Route::apiResource('datoteka', DatotekaController::class);
+    Route::get('datoteka', [DatotekaController::class, 'index']);
+    Route::get('datoteka/{datoteka}', [DatotekaController::class, 'show']);
 });
 
-// Standalone Datoteka routes
-Route::apiResource('datoteka', DatotekaController::class);
-
-
-// Pripada routes (korisnik-chat veza)
+// Pripada GET routes - javne
 Route::prefix('chat/{chat}')->group(function () {
     Route::get('korisnici', [PripadaController::class, 'index']);
-    Route::post('korisnici', [PripadaController::class, 'store']);
-    Route::delete('korisnici/{korisnik}', [PripadaController::class, 'destroy']);
 });
 
 Route::prefix('korisnik/{korisnik}')->group(function () {
